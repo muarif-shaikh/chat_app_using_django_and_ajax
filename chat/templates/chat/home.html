@@ -1,0 +1,32 @@
+{% extends "chat/base.html" %}
+{% block content %}
+<h2>Welcome {{ user.username }}</h2>
+<div class="link-container">
+    <a href="{% url 'create_room' %}" class="button">Create Room</a>
+    <a href="{% url 'join_room' %}" class="button">Join Room</a>
+</div>
+
+<style>
+    .link-container {
+        text-align: center;
+        margin: 50px auto;
+    }
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 10px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .button:hover {
+        background-color: #45a049;
+    }
+    .home-container h2 {
+        text-align: center;
+        color: #4CAF50;
+    }
+</style>
+{% endblock %}

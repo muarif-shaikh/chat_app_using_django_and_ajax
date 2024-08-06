@@ -1,0 +1,148 @@
+{% extends "chat/base.html" %}
+{% block content %}
+<h2>Create Room</h2>
+<div class="form-container">
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-group">
+            {{ form.name.label_tag }}
+            {{ form.name }}
+            {% if form.name.errors %}
+                <div class="error">{{ form.name.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            {{ form.is_private.label_tag }}
+            {{ form.is_private }}
+            {% if form.is_private.errors %}
+                <div class="error">{{ form.is_private.errors }}</div>
+            {% endif %}
+        </div>
+        <div id="allowed-users-container">
+            {{ form.allowed_users.label_tag }}
+            <input type="text" id="user-search" placeholder="Search users...">
+            <div id="user-checkboxes">
+                {% for user in form.allowed_users %}
+                    <label class="user-checkbox" style="display: none;">
+                        {{ user.tag }}
+                        <span>{{ user.choice_label }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+            {% if form.allowed_users.errors %}
+                <div class="error">{{ form.allowed_users.errors }}</div>
+            {% endif %}
+        </div>
+        <button type="submit">Create</button>
+    </form>
+</div>
+
+<style>
+    .form-container {
+        width: 80%;
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    form input[type="text"], form button {
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    form button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    form button:hover {
+        background-color: #45a049;
+    }
+
+    .form-container h2 {
+        text-align: center;
+        color: #4CAF50;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    #allowed-users-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #user-search {
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    #user-checkboxes label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    #user-checkboxes input[type="checkbox"] {
+        margin-right: 10px;
+    }
+
+    .error {
+        color: red;
+        margin-top: 5px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isPrivateCheckbox = document.querySelector('#id_is_private');
+        const allowedUsersContainer = document.getElementById('allowed-users-container');
+        const userSearchInput = document.getElementById('user-search');
+        const userCheckboxesDiv = document.getElementById('user-checkboxes');
+        const allUserLabels = Array.from(userCheckboxesDiv.querySelectorAll('.user-checkbox'));
+
+        function toggleAllowedUsers() {
+            if (isPrivateCheckbox.checked) {
+                allowedUsersContainer.style.display = 'block';
+            } else {
+                allowedUsersContainer.style.display = 'none';
+            }
+        }
+
+        function filterUsers(query) {
+            allUserLabels.forEach(label => {
+                const username = label.textContent.toLowerCase();
+                if (query.trim() === '' || !username.includes(query.toLowerCase())) {
+                    label.style.display = 'none';
+                } else {
+                    label.style.display = 'flex';
+                }
+            });
+        }
+
+        isPrivateCheckbox.addEventListener('change', toggleAllowedUsers);
+        userSearchInput.addEventListener('input', (event) => {
+            filterUsers(event.target.value);
+        });
+
+        toggleAllowedUsers(); // Initial call to set the correct state on page load
+    });
+</script>
+{% endblock %}
