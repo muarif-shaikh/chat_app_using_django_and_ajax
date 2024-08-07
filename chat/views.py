@@ -95,28 +95,19 @@ def clear_chat_view(request, room_name):
 @login_required
 def load_messages(request, room_name):
     room = get_object_or_404(Room, name=room_name)
-    messages = room.messages.all().order_by('timestamp')  # Order by ascending timestamp
+    messages = room.messages.all().order_by('-timestamp')[:50]  # Adjust as necessary
     messages_data = []
     ist = pytz.timezone('Asia/Kolkata')
-    current_date = None
-
     for message in messages:
         local_timestamp = message.timestamp.astimezone(ist)
-        message_date = local_timestamp.strftime('%Y-%m-%d')
-        formatted_time = local_timestamp.strftime('%H:%M')
-
-        if current_date != message_date:
-            messages_data.append({'date': message_date})
-            current_date = message_date
-
+        formatted_timestamp = local_timestamp.strftime('%m-%d-%Y %H:%M')
         messages_data.append({
             'username': message.user.username,
             'content': message.content,
-            'timestamp': formatted_time,
+            'timestamp': formatted_timestamp,
             'image': message.image.url if message.image else ''
         })
     return JsonResponse({'messages': messages_data})
-
 
 @login_required
 def send_message(request, room_name):
@@ -130,4 +121,3 @@ def send_message(request, room_name):
             message.save()
             return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error', 'errors': form.errors})
-
