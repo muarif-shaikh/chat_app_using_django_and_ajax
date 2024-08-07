@@ -18,6 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = ['web-production-28e7.up.railway.app', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://web-production-28e7.up.railway.app']
 
 
 # Application definition
@@ -30,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chat',
-    'whitenoise.runserver_nostatic'
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +132,7 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Media files configuration
