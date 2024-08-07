@@ -15,10 +15,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['web-production-28e7.up.railway.app', 'localhost']
-CSRF_TRUSTED_ORIGINS = ['https://web-production-28e7.up.railway.app']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(",")
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS').split(",")
 
 
 # Application definition
