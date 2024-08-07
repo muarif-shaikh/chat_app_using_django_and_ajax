@@ -28,3 +28,13 @@ class MessageForm(forms.ModelForm):
         widgets = {
             'content': forms.Textarea(attrs={'placeholder': 'Type your message here...', 'rows': 1, 'style': 'resize: none;'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        content = cleaned_data.get('content')
+        image = cleaned_data.get('image')
+
+        if not content and not image:
+            raise forms.ValidationError("Either content or image must be provided.")
+        return cleaned_data
+

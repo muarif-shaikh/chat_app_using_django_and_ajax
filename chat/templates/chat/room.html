@@ -185,7 +185,13 @@
             font-size: 24px;
             color: #007bff;
         }
-        
+
+        .date-separator {
+            text-align: center;
+            padding: 10px 0;
+            font-weight: bold;
+            color: #4CAF50;
+        }
     </style>
 </head>
 
@@ -234,7 +240,7 @@
             indicator.style.display = 'block';
         }
 
-        const colors = ['#A833FF','#FF5733', '#00CC66', '#3357FF', '#FF33A8'];
+        const colors = ['#A833FF', '#FF5733', '#00CC66', '#3357FF', '#FF33A8'];
 
         function getColorForUsername(username) {
             let hash = 0;
@@ -256,7 +262,13 @@
                     const chatLog = document.getElementById('chat-log');
                     const wasScrolledToBottom = isScrolledToBottom();
                     chatLog.innerHTML = '';
-                    data.messages.reverse().forEach(function (message) {
+                    data.messages.forEach(function (message, index) {
+                        if (index === 0 || data.messages[index - 1].timestamp.split(' ')[0] !== message.timestamp.split(' ')[0]) {
+                            const dateElement = document.createElement('div');
+                            dateElement.classList.add('date-separator');
+                            dateElement.innerText = message.timestamp.split(' ')[0];
+                            chatLog.appendChild(dateElement);
+                        }
                         const messageElement = document.createElement('div');
                         messageElement.classList.add('message-item');
                         const color = getColorForUsername(message.username);
@@ -266,16 +278,16 @@
                         }
                         const boxiconClass = getBoxiconForUsername(message.username);
                         messageElement.innerHTML = `
-                    <!--
-                        <div class="avatar">
-                        <i class="${boxiconClass}"></i>
-                    </div>
-                    -->
-                    <div class="message-content">
-                        <b style="color:${color};">${message.username}:</b> ${message.content} ${imageHTML}
-                        <span class="timestamp"><i>${message.timestamp}</i></span>
-                    </div>
-                `;
+                            <!--
+                            <div class="avatar">
+                                <i class="${boxiconClass}"></i>
+                            </div>
+                            -->
+                            <div class="message-content">
+                                <b style="color:${color};">${message.username}:</b> ${message.content} ${imageHTML}
+                                <span class="timestamp"><i>${message.timestamp}</i></span>
+                            </div>
+                        `;
                         chatLog.appendChild(messageElement);
                     });
                     if (wasScrolledToBottom) {
@@ -290,7 +302,6 @@
                 }
             });
         }
-
 
         $(document).ready(function () {
             loadMessages();
@@ -309,7 +320,9 @@
                             $('#message-form')[0].reset();
                             loadMessages();
                         } else {
-                            console.error('Error sending message');
+                            console.error('Error sending message:', data.errors);
+                            // Display errors to the user
+                            $('#message-form').prepend('<div class="alert alert-danger">Error sending message: ' + JSON.stringify(data.errors) + '</div>');
                         }
                     },
                     error: function (error) {
@@ -326,6 +339,7 @@
             // Polling for new messages every 5 seconds
             setInterval(loadMessages, 5000);
         });
+
     </script>
 </body>
 

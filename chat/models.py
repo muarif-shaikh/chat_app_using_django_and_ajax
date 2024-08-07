@@ -13,9 +13,10 @@ class Room(models.Model):
 class Message(models.Model):
     room = models.ForeignKey(Room, related_name='messages', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='images/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username}: {self.content}"
+
