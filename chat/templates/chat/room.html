@@ -185,8 +185,6 @@
             font-size: 24px;
             color: #007bff;
         }
-
-        
     </style>
 </head>
 
@@ -212,15 +210,22 @@
 
         {% if room.creator == user %}
         <div class="clear-chat">
-            <form action="{% url 'clear_chat' room_name=room.name %}" method="post">
+            <form id="clear-chat-form" action="{% url 'clear_chat' room_name=room.name %}" method="post">
                 {% csrf_token %}
-                <button type="submit">Clear Chat</button>
+                <button type="button" onclick="confirmClearChat()">Clear Chat</button>
             </form>
         </div>
         {% endif %}
     </div>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script>
+        function confirmClearChat() {
+            const confirmation = confirm("Are you sure you want to clear the chat?");
+            if (confirmation) {
+                document.getElementById('clear-chat-form').submit();
+            }
+        }
+
         function scrollToBottom() {
             const chatLog = document.getElementById('chat-log');
             chatLog.scrollTop = chatLog.scrollHeight;
@@ -251,68 +256,68 @@
         }
 
         function parseDate(dateString) {
-    const [day, month, year] = dateString.split('/');
-    return new Date(`${year}-${month}-${day}`);
-}
+            const [day, month, year] = dateString.split('/');
+            return new Date(`${year}-${month}-${day}`);
+        }
 
-function formatTime(timestamp) {
-    const date = parseDate(timestamp);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-}
+        function formatTime(timestamp) {
+            const date = parseDate(timestamp);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
 
-function getDateDisplay(timestamp) {
-    const messageDate = parseDate(timestamp);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+        function getDateDisplay(timestamp) {
+            const messageDate = parseDate(timestamp);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
 
-    if (messageDate >= today) {
-        return 'Today';
-    } else if (messageDate >= yesterday) {
-        return 'Yesterday';
-    } else {
-        return messageDate.toDateString();
-    }
-}
+            if (messageDate >= today) {
+                return 'Today';
+            } else if (messageDate >= yesterday) {
+                return 'Yesterday';
+            } else {
+                return messageDate.toDateString();
+            }
+        }
 
-function loadMessages() {
-    $.ajax({
-        url: "{% url 'load_messages' room.name %}",
-        method: "GET",
-        success: function (data) {
-            const chatLog = document.getElementById('chat-log');
-            const dateDisplay = document.getElementById('date-display');
-            const wasScrolledToBottom = isScrolledToBottom();
-            chatLog.innerHTML = '';
-            let currentDisplayDate = '';
+        function loadMessages() {
+            $.ajax({
+                url: "{% url 'load_messages' room.name %}",
+                method: "GET",
+                success: function (data) {
+                    const chatLog = document.getElementById('chat-log');
+                    const dateDisplay = document.getElementById('date-display');
+                    const wasScrolledToBottom = isScrolledToBottom();
+                    chatLog.innerHTML = '';
+                    let currentDisplayDate = '';
 
-            data.messages.reverse().forEach(function (message) {
-                const messageElement = document.createElement('div');
-                messageElement.classList.add('message-item');
-                const color = getColorForUsername(message.username);
-                let imageHTML = '';
-                if (message.image) {
-                    imageHTML = `<img src="${message.image}" alt="Image">`;
-                }
-                const boxiconClass = getBoxiconForUsername(message.username);
-                const formattedTime = formatTime(message.timestamp);
-                const messageDate = parseDate(message.timestamp);
-                const displayDate = getDateDisplay(message.timestamp);
+                    data.messages.reverse().forEach(function (message) {
+                        const messageElement = document.createElement('div');
+                        messageElement.classList.add('message-item');
+                        const color = getColorForUsername(message.username);
+                        let imageHTML = '';
+                        if (message.image) {
+                            imageHTML = `<img src="${message.image}" alt="Image">`;
+                        }
+                        const boxiconClass = getBoxiconForUsername(message.username);
+                        const formattedTime = formatTime(message.timestamp);
+                        const messageDate = parseDate(message.timestamp);
+                        const displayDate = getDateDisplay(message.timestamp);
 
-                if (displayDate !== currentDisplayDate) {
-                    currentDisplayDate = displayDate;
-                    const dateElement = document.createElement('div');
-                    dateElement.classList.add('date-indicator');
-                    dateElement.style.textAlign = 'center';
-                    dateElement.style.margin = '10px 0';
-                    dateElement.innerText = currentDisplayDate;
-                    chatLog.appendChild(dateElement);
-                }
+                        if (displayDate !== currentDisplayDate) {
+                            currentDisplayDate = displayDate;
+                            const dateElement = document.createElement('div');
+                            dateElement.classList.add('date-indicator');
+                            dateElement.style.textAlign = 'center';
+                            dateElement.style.margin = '10px 0';
+                            dateElement.innerText = currentDisplayDate;
+                            chatLog.appendChild(dateElement);
+                        }
 
-                messageElement.innerHTML = `
+                        messageElement.innerHTML = `
                     <div class="message-content">
                         <b style="color:${color};">${message.username}:</b>
                         <div>${message.content}</div>
@@ -320,56 +325,56 @@ function loadMessages() {
                         <span class="timestamp"><i>${formattedTime}</i></span>
                     </div>
                 `;
-                chatLog.appendChild(messageElement);
+                        chatLog.appendChild(messageElement);
+                    });
+
+                    if (wasScrolledToBottom) {
+                        scrollToBottom();
+                        document.getElementById('new-message-indicator').style.display = 'none';
+                    } else {
+                        showNewMessageIndicator();
+                    }
+                },
+                error: function (error) {
+                    console.error('Error loading messages:', error);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            loadMessages();
+
+            $('#message-form').submit(function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                $.ajax({
+                    url: "{% url 'send_message' room.name %}",
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        if (data.status === 'success') {
+                            $('#message-form')[0].reset();
+                            loadMessages();
+                        } else {
+                            console.error('Error sending message');
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error sending message:', error);
+                    }
+                });
             });
 
-            if (wasScrolledToBottom) {
+            $('#scroll-to-latest').click(function () {
                 scrollToBottom();
                 document.getElementById('new-message-indicator').style.display = 'none';
-            } else {
-                showNewMessageIndicator();
-            }
-        },
-        error: function (error) {
-            console.error('Error loading messages:', error);
-        }
-    });
-}
+            });
 
-$(document).ready(function () {
-    loadMessages();
-
-    $('#message-form').submit(function (e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        $.ajax({
-            url: "{% url 'send_message' room.name %}",
-            method: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                if (data.status === 'success') {
-                    $('#message-form')[0].reset();
-                    loadMessages();
-                } else {
-                    console.error('Error sending message');
-                }
-            },
-            error: function (error) {
-                console.error('Error sending message:', error);
-            }
+            // Polling for new messages every 5 seconds
+            setInterval(loadMessages, 5000);
         });
-    });
-
-    $('#scroll-to-latest').click(function () {
-        scrollToBottom();
-        document.getElementById('new-message-indicator').style.display = 'none';
-    });
-
-    // Polling for new messages every 5 seconds
-    setInterval(loadMessages, 5000);
-});
 
     </script>
 </body>
