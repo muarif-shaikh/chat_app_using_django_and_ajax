@@ -1,6 +1,6 @@
 from pathlib import Path
 from decouple import config
-import dj_database_url
+# import dj_database_url
 import os
 
 
@@ -17,7 +17,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['web-production-28e7.up.railway.app']
+ALLOWED_HOSTS = ['web-production-28e7.up.railway.app', 'localhost']
 
 
 # Application definition
@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'chat',
+    'whitenoise.runserver_nostatic'
 ]
 
 MIDDLEWARE = [
@@ -74,10 +75,21 @@ WSGI_APPLICATION = 'chatapp.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    'default': dj_database_url.config(default=config('DATABASE_URL'))
-}
+# DATABASES = {
+#     'default': dj_database_url.config(default=config('DATABASE_URL'))
+# }
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DATABASE_NAME'),
+        'USER': config('DATABASE_USER'),
+        'PASSWORD': config('DATABASE_PASSWORD'),
+        'HOST': config('DATABASE_HOST'),
+        'PORT': config('DATABASE_PORT'),
+
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
