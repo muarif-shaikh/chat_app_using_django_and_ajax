@@ -1,32 +1,80 @@
 {% extends "chat/base.html" %}
+{% load static %}
 {% block content %}
-<h2>Welcome {{ user.username }}</h2>
-<div class="link-container">
-    <a href="{% url 'create_room' %}" class="button">Create Room</a>
-    <a href="{% url 'join_room' %}" class="button">Join Room</a>
+<div class="home-container">
+    <h2>Welcome, <span class="username">{{ user.username }}</span></h2>
+    <div class="link-container">
+        <div class="image-container">
+            <img src="{% static 'images/chat5.png' %}" alt="Chat Image" class="responsive-image">
+        </div>
+        <a href="{% url 'create_room' %}" class="button">Create Room</a>
+        <a href="{% url 'join_room' %}" class="button">Join Room</a>
+    </div>
 </div>
 
 <style>
-    .link-container {
+    .home-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
         text-align: center;
-        margin: 50px auto;
+        background-color: #f9f9f9;
+        padding: 20px;
     }
+    
+    .home-container h2 {
+        color: #4CAF50;
+        margin-bottom: 30px;
+        font-size: 2rem;
+    }
+
+    .username {
+        color: #2c7caa; /* Different color for the username */
+        font-weight: bold;
+    }
+
+    .link-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-container {
+        width: 100%;
+        max-width: 200px;
+        margin-bottom: 20px;
+    }
+
+    .responsive-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+    }
+
     .button {
         display: inline-block;
-        padding: 10px 20px;
+        padding: 12px 25px;
         margin: 10px;
         background-color: #4CAF50;
         color: white;
         text-decoration: none;
-        border-radius: 5px;
+        border-radius: 25px;
         font-weight: bold;
+        transition: background-color 0.3s ease;
     }
+
     .button:hover {
         background-color: #45a049;
     }
-    .home-container h2 {
-        text-align: center;
-        color: #4CAF50;
+
+    @media (max-width: 600px) {
+        .home-container {
+            min-height: 75vh;
+        }
+        
     }
 </style>
 {% endblock %}

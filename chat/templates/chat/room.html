@@ -17,7 +17,7 @@
         }
 
         #chat-container {
-            width: 90%;
+            width: 100%;
             max-width: 800px;
             margin: 50px auto;
             background-color: #ffffff;
@@ -185,6 +185,14 @@
             font-size: 24px;
             color: #007bff;
         }
+
+        @media screen and (max-width: 768px) {
+            #chat-container {
+            margin: 0px auto;
+            border-radius: 0px;
+        }
+
+        }
     </style>
 </head>
 
@@ -216,7 +224,12 @@
             </form>
         </div>
         {% endif %}
+        <div class="cptext text-center mt-3 mb-3" style="font-family: Courier New;">
+            <p>EchoSphere &copy; 2024<br><p style="color: grey;">Developed by Muarif Shaikh</p></p>
+        </div>
     </div>
+   
+    
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script>
         function confirmClearChat() {
@@ -241,7 +254,7 @@
             indicator.style.display = 'block';
         }
 
-        const colors = ['#A833FF', '#FF5733', '#00CC66', '#3357FF', '#FF33A8'];
+        const colors = ['#A833FF', '#FF5733', '#00CC66', '#3357FF', '#FF33A8', '#FFB833', '#33FFC1', '#B833FF', '#FF336E', '#33A8FF'];
 
         function getColorForUsername(username) {
             let hash = 0;
@@ -319,7 +332,7 @@
 
                         messageElement.innerHTML = `
                     <div class="message-content">
-                        <b style="color:${color};">${message.username}:</b>
+                        <b style="color:${color};">${message.username}</b>
                         <div>${message.content}</div>
                         ${imageHTML}
                         <span class="timestamp"><i>${formattedTime}</i></span>
