@@ -2,7 +2,10 @@
 {% load static %}
 {% block content %}
 <div class="home-container">
+    {% if request.user.is_authenticated %}
     <h2>Welcome, <span class="username">{{ user.username }}</span></h2>
+    {% else %}
+    <h2>Welcome, <span class="username">Guest</span></h2>
     <div class="link-container">
         <div class="image-container">
             <img src="{% static 'images/chat5.png' %}" alt="Chat Image" class="responsive-image">
